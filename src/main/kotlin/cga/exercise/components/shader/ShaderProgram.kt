@@ -41,11 +41,23 @@ class ShaderProgram(vertexShaderPath: String, fragmentShaderPath: String) {
      * @param value Value
      * @return returns false if the uniform was not found in the shader
      */
+
     fun setUniform(name: String, value: Float): Boolean {
         if (programID == 0) return false
         val loc = GL20.glGetUniformLocation(programID, name)
         if (loc != -1) {
             GL20.glUniform1f(loc, value)
+            return true
+        }
+        return false
+    }
+
+    fun setUniform(name: String, value: Matrix4f, transpose: Boolean): Boolean {
+        if (programID == 0) return false
+        val loc = GL20.glGetUniformLocation(programID, name)
+        if (loc != -1) {
+            value.get(m4x4buf)
+            GL20.glUniformMatrix4fv(loc, transpose, m4x4buf)
             return true
         }
         return false

@@ -1,6 +1,7 @@
 package cga.exercise.game
 
 import cga.exercise.components.geometry.Mesh
+import cga.exercise.components.geometry.Renderable
 import cga.exercise.components.geometry.VertexAttribute
 import cga.exercise.components.shader.ShaderProgram
 import cga.framework.GLError
@@ -14,13 +15,17 @@ import org.lwjgl.opengl.GL11.*
  */
 class Scene(private val window: GameWindow) {
     private val staticShader: ShaderProgram
-        val houseMesh: Mesh
-        val initialMesh: Mesh
-        val sphereMesh: Mesh
+    val groundMesh: Mesh
+    val sphereMesh: Mesh
+    //val groundMat = Matrix4f().rotateX(0.5f * PI.toFloat()).scale(0.03f)
+    val ground: Renderable
+    //val sphereMat = Matrix4f().scale(0.5f)
+    val sphere: Renderable
+
 
     //scene setup
     init {
-        staticShader = ShaderProgram("assets/shaders/simple_vert.glsl", "assets/shaders/simple_frag.glsl")
+        staticShader = ShaderProgram("assets/shaders/tron_vert.glsl", "assets/shaders/tron_frag.glsl")
 
         //initial opengl state
         glClearColor(0.4f, 0.4f, 0.4f, 1.0f); GLError.checkThrow()
@@ -30,66 +35,48 @@ class Scene(private val window: GameWindow) {
         glEnable(GL_DEPTH_TEST); GLError.checkThrow()
         glDepthFunc(GL_LESS); GLError.checkThrow()
 
-        val houseVertices = floatArrayOf(
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, //v0
-            0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,  //v1
-            0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,  //v2
-            0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f
+
+        //ground object
+        val groundObj = OBJLoader.loadOBJ("assets/models/ground.obj")
+        val groundOBJMesh = groundObj.objects.first().meshes.first()
+
+        val groundAttrib = arrayOf(
+            VertexAttribute(3, GL_FLOAT, false, 32, 0),
+            VertexAttribute(3, GL_FLOAT, false, 32, 12),
+            VertexAttribute(3, GL_FLOAT, false, 32, 20)
         )
 
-        val houseIndices = intArrayOf(
-            0, 2, 4,
-            0, 1, 2,
-            4, 2, 3
-        )
+        groundMesh = Mesh(groundOBJMesh.vertexData, groundOBJMesh.indexData, groundAttrib)
+        ground = Renderable(mutableListOf(groundMesh))
+        ground.rotateLocal(0.5f * PI.toFloat(), 0f, 0f)
+        ground.scaleLocal(Vector3f(0.03f))
+                //rotateX(0.5f * PI.toFloat()).scale(0.03f)
 
-        val position = VertexAttribute(3, GL_FLOAT,false,24, 0)
-        val colour= VertexAttribute(3, GL_FLOAT, false,24, 12)
-
-        val vertexAtrributeArray = arrayOf (
-            position,
-            colour
-        )
-
-        houseMesh = Mesh(houseVertices, houseIndices, vertexAtrributeArray); GLError.checkThrow()
-
-        val initialVertices = floatArrayOf(
-            -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // S1
-            -0.8f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // S2
-            -0.8f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // S3
-            -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // S4
-            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, // S5
-            -0.8f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f // S6
-        )
-        val initialIndicies = intArrayOf(
-            0, 1,2,
-            2,4,1,
-            4, 3,2,
-            5, 4,3
-        )
-
-        initialMesh = Mesh(initialVertices, initialIndicies, vertexAtrributeArray); GLError.checkThrow()
-
-        val sphere = OBJLoader.loadOBJ("assets/models/sphere.obj")
-        val sphereOBJMesh = sphere.objects.first().meshes.first()
+        //sphere object
+        val sphereObj = OBJLoader.loadOBJ("assets/models/sphere.obj")
+        val sphereOBJMesh = sphereObj.objects.first().meshes.first()
 
         val sphereAttrib = arrayOf(
             VertexAttribute(3, GL_FLOAT, false, 32, 0), //Position
             VertexAttribute(2, GL_FLOAT, false,32, 12),  //Tex
             VertexAttribute(3, GL_FLOAT, true, 32, 20)  //Normals
         )
-
         sphereMesh = Mesh(sphereOBJMesh.vertexData, sphereOBJMesh.indexData, sphereAttrib)
+        sphere = Renderable(mutableListOf(sphereMesh))
+        sphere.scaleLocal(Vector3f(0.5f))
     }
 
     fun render(dt: Float, t: Float) {
 
         staticShader.use()
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-        //houseMesh.render()
-        //initialMesh.render()
-        sphereMesh.render()
+
+        ground.render(staticShader)
+
+        sphere.render(staticShader)
+        sphere.rotateLocal(0.02f * PI.toFloat(),0f ,0f)
+        sphere.scaleLocal(Vector3f(0.9999f))
+
     }
 
     fun update(dt: Float, t: Float) {}

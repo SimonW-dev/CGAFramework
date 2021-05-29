@@ -49,6 +49,7 @@ class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<Vertex
     /**
      * renders the mesh
      */
+
     fun render() {
         glBindVertexArray(vao)
         glDrawElements(drawMode, indexcount, GL_UNSIGNED_INT, 0)
