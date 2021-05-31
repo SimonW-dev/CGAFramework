@@ -1,5 +1,6 @@
 package cga.exercise.game
 
+import cga.exercise.components.camera.TronCamera
 import cga.exercise.components.geometry.Mesh
 import cga.exercise.components.geometry.Renderable
 import cga.exercise.components.geometry.VertexAttribute
@@ -9,6 +10,7 @@ import cga.framework.GameWindow
 import cga.framework.OBJLoader
 import org.joml.Matrix4f
 import org.joml.Vector3f
+import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.PI
 
@@ -24,6 +26,10 @@ class Scene(private val window: GameWindow) {
     val ground: Renderable
     //val sphereMat = Matrix4f().scale(0.5f)
     val sphere: Renderable
+    val camera: TronCamera
+
+    private val movementSpeed: Float = 1f
+    private val rotationSpeed: Float =1.5f
 
 
     //scene setup
@@ -66,7 +72,10 @@ class Scene(private val window: GameWindow) {
         )
         sphereMesh = Mesh(sphereOBJMesh.vertexData, sphereOBJMesh.indexData, sphereAttrib)
         sphere = Renderable(mutableListOf(sphereMesh))
-        sphere.scaleLocal(Vector3f(0.5f))
+
+        camera = TronCamera(cameraTarget = Vector3f(0f),parent = sphere)
+        camera.rotateLocal(-0.35f, 0f, 0f)
+        camera.translateLocal(Vector3f(0f, 0f, 4.0f))
     }
 
     fun render(dt: Float, t: Float) {
@@ -74,9 +83,12 @@ class Scene(private val window: GameWindow) {
         staticShader.use()
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
+        camera.bind(staticShader)
         ground.render(staticShader)
-
         sphere.render(staticShader)
+
+
+        /*
         sphere.rotateLocal(0.02f * PI.toFloat(),0f ,0f)
         sphere.scaleLocal(Vector3f(0.9999f))
 

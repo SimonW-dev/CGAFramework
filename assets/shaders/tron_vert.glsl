@@ -7,6 +7,8 @@ layout(location = 2) in vec3 normal;
 // uniforms
 // translation object to world
 uniform mat4 model_matrix;
+uniform mat4 view_matrix;
+uniform mat4 projection_matrix;
 
 out struct VertexData
 {
