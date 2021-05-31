@@ -129,8 +129,9 @@ open class Transformable(var modelMatrix: Matrix4f = Matrix4f(), var parent: Tra
      * @return x-axis
      */
     override fun getWorldXAxis(): Vector3f {
-        val m = getWorldModelMatrix()
-        return Vector3f(m.m00(), m.m01(), m.m02())
+        val m = parent?.modelMatrix ?: modelMatrix
+        val v = Vector3f(m.m00(), m.m01(), m.m02())
+        return v.normalize()
     }
 
     /**
@@ -139,8 +140,9 @@ open class Transformable(var modelMatrix: Matrix4f = Matrix4f(), var parent: Tra
      * @return y-axis
      */
     override fun getWorldYAxis(): Vector3f {
-        val m = getWorldModelMatrix()
-        return Vector3f(m.m10(), m.m11(), m.m12())
+        val m = parent?.modelMatrix ?: modelMatrix
+        val v = Vector3f(m.m10(), m.m11(), m.m12())
+        return v.normalize()
     }
 
     /**
@@ -149,8 +151,9 @@ open class Transformable(var modelMatrix: Matrix4f = Matrix4f(), var parent: Tra
      * @return z-axis
      */
     override fun getWorldZAxis(): Vector3f {
-        val m = getWorldModelMatrix()
-        return Vector3f(m.m20(), m.m21(), m.m22())
+        val m =getWorldModelMatrix()
+        val v = Vector3f(m.m20(), m.m21(), m.m22())
+        return v.normalize()
     }
 
     /**

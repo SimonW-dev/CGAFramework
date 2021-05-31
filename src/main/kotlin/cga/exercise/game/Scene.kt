@@ -57,8 +57,6 @@ class Scene(private val window: GameWindow) {
 
         groundMesh = Mesh(groundOBJMesh.vertexData, groundOBJMesh.indexData, groundAttrib)
         ground = Renderable(mutableListOf(groundMesh))
-        ground.rotateLocal(0.5f * PI.toFloat(), 0f, 0f)
-        ground.scaleLocal(Vector3f(0.03f))
                 //rotateX(0.5f * PI.toFloat()).scale(0.03f)
 
         //sphere object
@@ -91,10 +89,23 @@ class Scene(private val window: GameWindow) {
         /*
         sphere.rotateLocal(0.02f * PI.toFloat(),0f ,0f)
         sphere.scaleLocal(Vector3f(0.9999f))
-
+        */
     }
 
-    fun update(dt: Float, t: Float) {}
+    fun update(dt: Float, t: Float) {
+        if (window.getKeyState(GLFW.GLFW_KEY_W)){
+            sphere.translateLocal(Vector3f(0f,0f,-movementSpeed*dt))
+        }
+        if (window.getKeyState(GLFW.GLFW_KEY_S)){
+            sphere.translateLocal(Vector3f(0f,0f,+movementSpeed*dt))
+        }
+        if (window.getKeyState(GLFW.GLFW_KEY_A)){
+            sphere.rotateLocal(0f, +rotationSpeed*dt, 0f)
+        }
+        if (window.getKeyState(GLFW.GLFW_KEY_D)){
+            sphere.rotateLocal(0f, -rotationSpeed*dt, 0f)
+        }
+    }
 
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
 

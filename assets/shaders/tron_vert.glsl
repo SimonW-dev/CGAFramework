@@ -18,12 +18,12 @@ out struct VertexData
 
 //
 void main(){
-    vec4 pos = model_matrix * vec4(position, 1.0f);
-    gl_Position = vec4(pos.xy, -pos.z, 1.0f);
+    vec4 pos = projection_matrix * view_matrix * model_matrix * vec4(position, 1.0f);
+    gl_Position = pos;
 
     //normals are weird, that's why we need to transform them using the inverse transposed model matrix
     //also, we don't want to translate them, so the homogeneous coordinate has to be 0
-    vec4 norm = transpose(inverse(model_matrix)) * vec4(normal, 0.0f);
+    vec4 norm = transpose(inverse(view_matrix * model_matrix)) * vec4(normal, 0.0f);
 
     vertexData.position = pos.xyz;
     vertexData.normal = norm.xyz;
